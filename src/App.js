@@ -1,26 +1,23 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import MoviesList from "./Components/MoviesList";
+import {Route} from "react-router-dom";
+import Starship from "./Components/Starship";
+import Planets from "./Components/Planets";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <>
+            <Route path='/films'
+                   component={MoviesList}/>
+
+            <Route path='/starship/:id'
+                   component={Starship}/>
+
+            <Route path='/starship/:id'
+                   component={Planets}/>
+        </>
+    );
 }
 
 export default App;
