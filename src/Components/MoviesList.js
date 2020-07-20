@@ -1,48 +1,50 @@
-import React from 'react';
-import axios from "axios";
+import React, {useEffect} from 'react';
 import {Link} from "react-router-dom";
+import {setFilmsActionCreator} from "../reducers/starshipReducer";
+import {MoviesListAPI} from "../api/api";
+import {connect} from "react-redux";
 
-class MoviesList extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            films: []
-        };
-    }
+const MoviesList = (props) => {
 
-    componentDidMount() {
-        axios.get('https://swapi.dev/api/films/')
-            .then(res => res.data)
-            .then((response) => {
-                this.setState({
-                    films: response.results
-                });
-            })
-    }
+    useEffect(() => {
+        async function getMoviesListAPI() {
+            let res = await MoviesListAPI.getMoviesAPI();
+            let data = await res.data;
+            props.setFilms(data);
+        }
 
-    filmItem = (film) => {
+        getMoviesListAPI();
+    }, []);
+
+    const filmItem = (film) => {
         let starshipId = (str) => {
             let strSplit = str.split('/');
             return strSplit[strSplit.length - 2];
         };
 
-        return <div>
+        return <div key={`${film.title}`}>
             <h1>{film.title}</h1>
             <h3>{film.episode_id}</h3>
             <p>{film.opening_crawl}</p>
-            {film.starships.map(item => <Link to={"/starship/" + starshipId(item)}>{item}<br/></Link>)}
+            {film.starships.map((item, index) => <Link key={`${film.title} + ${index}`} to={"/starship/" + starshipId(item)}>{item}<br/></Link>)}
         </div>
     };
 
+    return (
+     <>
+        <div>
+            {props.films && props.films.map(item => filmItem(item))}
+        </div>
+    </>
+)};
 
-    render() {
-        const {films} = this.state;
-        return <>
-            <div>
-                {films && films.map(item => this.filmItem(item))}
-            </div>
-        </>
-    }
-}
+const mapStateToProps = (state) => ({
+    films: state.starshipPage.films.results
+});
 
-export default MoviesList;
+const mapDispatchToProps = (dispatch) => ({
+    setFilms: (films) => dispatch(setFilmsActionCreator(films))
+});
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(MoviesList);

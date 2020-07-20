@@ -1,33 +1,38 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {useParams} from "react-router-dom";
-import axios from "axios";
+import {setStarshipActionCreator} from "../reducers/starshipReducer";
+import {connect} from "react-redux";
+import {MoviesListAPI} from "../api/api";
 
-const Starship = () => {
+const Starship = (props) => {
     let {id} = useParams();
-    let [state, setState] = useState("");
 
     useEffect(() => {
-        axios.get('https://swapi.dev/api/starships/' + id)
-            .then(response => response.data)
-            .then(res => setState(res));
+        async function getMoviesAPI() {
+            let res = await MoviesListAPI.getStarshipAPI(id);
+            let data = await res.data;
+            props.setStarship(data);
+        }
+        getMoviesAPI();
     }, []);
+
 
     return (
         <div>
             Starships {id}
             <div>
-                name: {state.name} <br/>
-                cargo_capacity: {state.cargo_capacity} <br/>
-                consumables: {state.consumables} <br/>
-                hyperdrive_rating: {state.hyperdrive_rating} <br/>
-                length: {state.length} <br/>
-                manufacturer: {state.manufacturer} <br/>
-                model: {state.model} <br/>
-                passengers: {state.passengers} <br/>
-                starship_class: {state.starship_class}
+                name: {props.starship.name}
             </div>
         </div>
     )
 };
 
-export default Starship;
+const mapStateToProps = (state) => ({
+    starship: state.starshipPage.name
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    setStarship: (starship) => dispatch(setStarshipActionCreator(starship))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Starship);

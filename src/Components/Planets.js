@@ -1,21 +1,39 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {useParams} from "react-router-dom";
-import axios from "axios";
+import {setPlanetsActionCreator} from "../reducers/starshipReducer";
+import {PlanetsAPI} from "../api/api";
+import {connect} from "react-redux";
 
-const Planets = () => {
+const Planets = (props) => {
     let {id} = useParams();
-    let [state, setState] = useState("");
 
     useEffect(() => {
-        axios.get('https://swapi.dev/api/planets/' + id)
-            .then(response => response.data)
-            .then(res => setState(res));
+        async function getPlanetsInfo() {
+            let res = await PlanetsAPI.getPlanetsAPI(id); //promise
+            let data = await res.data;
+            props.setPlanet(data);
+        }
+
+        getPlanetsInfo();
     }, []);
+
+
     return (
         <div>
-            Planets {id}
+            <h1>Planets</h1>
+            <h2>{props.planet.name}</h2>
+            <div>{props.planet.films}</div>
+            <div>{props.planet.residents}</div>
         </div>
     )
 };
 
-export default Planets;
+const mapStateToProps = (state) => ({
+    planet: state.starshipPage.name
+});
+
+const mapDispatchToProps = (dispatch) => ({
+    setPlanet: (planet) => dispatch(setPlanetsActionCreator(planet))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Planets);
