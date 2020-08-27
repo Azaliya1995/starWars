@@ -1,28 +1,21 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {useParams} from "react-router-dom";
-import {setStarshipActionCreator} from "../reducers/starshipReducer";
+import {setStarshipActionCreatorAsync} from "../reducers/starshipReducer";
 import {connect} from "react-redux";
-import {MoviesListAPI} from "../api/api";
+import {bindActionCreators} from "redux";
+import {useMount} from "react-use";
 
 const Starship = (props) => {
     let {id} = useParams();
 
-    useEffect(() => {
-        async function getMoviesAPI() {
-            let res = await MoviesListAPI.getStarshipAPI(id);
-            let data = await res.data;
-            props.setStarship(data);
-        }
-        getMoviesAPI();
-    }, []);
-
+    useMount(() => {
+       props.setStarship(id)
+    });
 
     return (
         <div>
-            Starships {id}
-            <div>
-                name: {props.starship.name}
-            </div>
+            <div>Starships {id}</div>
+
         </div>
     )
 };
@@ -32,7 +25,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    setStarship: (starship) => dispatch(setStarshipActionCreator(starship))
+    setStarship: bindActionCreators(setStarshipActionCreatorAsync, dispatch)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Starship);

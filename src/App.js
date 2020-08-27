@@ -13,7 +13,7 @@ function App() {
                 <Route path='/films'
                        component={MoviesList}/>
 
-                <Route path='/starship/:id'
+                <Route path='/starships/:id'
                        component={Starship}/>
 
                 <Route path='/planets/:id'

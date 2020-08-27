@@ -1,21 +1,16 @@
-import React, {useEffect} from "react";
+import React from "react";
 import {useParams} from "react-router-dom";
-import {setPlanetsActionCreator} from "../reducers/starshipReducer";
-import {PlanetsAPI} from "../api/api";
+import {setPlanetsActionCreatorAsync} from "../reducers/starshipReducer";
 import {connect} from "react-redux";
+import {bindActionCreators} from "redux";
+import {useMount} from "react-use";
 
 const Planets = (props) => {
     let {id} = useParams();
 
-    useEffect(() => {
-        async function getPlanetsInfo() {
-            let res = await PlanetsAPI.getPlanetsAPI(id); //promise
-            let data = await res.data;
-            props.setPlanet(data);
-        }
-
-        getPlanetsInfo();
-    }, []);
+    useMount(() => {
+        props.setPlanet(id);
+    });
 
 
     return (
@@ -23,6 +18,7 @@ const Planets = (props) => {
             <h1>Planets</h1>
             <h2>{props.planet.name}</h2>
             <div>{props.planet.films}</div>
+            <br/>
             <div>{props.planet.residents}</div>
         </div>
     )
@@ -33,7 +29,7 @@ const mapStateToProps = (state) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-    setPlanet: (planet) => dispatch(setPlanetsActionCreator(planet))
+    setPlanet: bindActionCreators(setPlanetsActionCreatorAsync, dispatch)
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Planets);
